@@ -1,0 +1,42 @@
+# ==========================================================
+# Elastic Agent Configuration Template
+# Project: AWS Cloud Security Labs
+# Purpose: Collect AWS logs into Elastic Security.
+# ==========================================================
+
+outputs:
+  default:
+    type: elasticsearch
+    hosts:
+      - https://ELASTIC_CLOUD_HOST:443
+    api_key: API_KEY
+
+agent:
+  monitoring:
+    enabled: true
+    logs: true
+    metrics: true
+
+inputs:
+  # AWS CloudTrail (Enabled)
+  - id: aws-cloudtrail
+    type: aws-s3
+    enabled: true
+    streams:
+      - data_stream:
+          type: logs
+          dataset: aws.cloudtrail
+        bucket_arn: arn:aws:s3:::CLOUDTRAIL_BUCKET
+        queue_url: https://sqs.REGION.amazonaws.com/ACCOUNT_ID/CLOUDTRAIL_QUEUE
+        region: AWS_REGION
+        expand_event_list_from_field: Records
+
+
+
+processors:
+  - add_tags:
+      tags:
+        - aws
+        - elastic
+        - siem
+        - cloud-security
