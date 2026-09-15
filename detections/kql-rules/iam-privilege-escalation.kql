@@ -1,0 +1,50 @@
+# ============================================================
+# Project         : IAM Privilege Escalation Lab
+# Detection Name  : IAM Privilege Escalation - AdministratorAccess Attached
+# Detection Type  : Elastic Security KQL Rule
+# MITRE ATT&CK    : T1098 - Account Manipulation
+# ATT&CK Tactics  : TA0004 (Privilege Escalation)
+#                   TA0003 (Persistence)
+# Severity        : High
+# Platform        : AWS CloudTrail + Elastic Security
+# Author          : Abhinav Maurya
+# ============================================================
+
+/*
+Description
+-----------
+Detects when an IAM principal attaches the AWS managed
+AdministratorAccess policy to an IAM user using the AttachUserPolicy API.
+
+Rule Configuration
+------------------
+Index Pattern          : logs-*
+Runs Every             : 1 minute
+Additional Look-back   : 120 minutes
+Severity               : High
+Risk Score             : 80
+*/
+
+event.action:"AttachUserPolicy"
+and aws.cloudtrail.flattened.request_parameters:*AdministratorAccess*
+
+/*
+Key Investigation Fields
+------------------------
+@timestamp
+event.action
+source.ip
+user.name
+aws.cloudtrail.user_identity.arn
+aws.cloudtrail.user_identity.access_key_id
+aws.cloudtrail.flattened.request_parameters
+cloud.account.id
+
+Response Guidance
+-----------------
+1. Identify who attached AdministratorAccess.
+2. Identify the target IAM user.
+3. Verify source IP and access key.
+4. Confirm whether the action was authorized.
+5. Detach the policy and rotate credentials if malicious.
+*/
