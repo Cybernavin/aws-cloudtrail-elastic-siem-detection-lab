@@ -1,0 +1,24 @@
+=========================================================
+Rule Name   : CloudTrail Tampering Detection
+Project     : CloudTrail Tampering Detection Lab
+Platform    : Elastic Security (KQL)
+Severity    : High
+Risk Score  : 73
+Runs Every  : 1 Minute
+Look-back   : 120 Minutes
+Author      : Abhinav Maurya
+=========================================================
+
+Description:
+Detects AWS CloudTrail tampering events including:
+- StopLogging
+- StartLogging
+- UpdateTrail
+
+MITRE ATT&CK:
+TA0005 - Defense Evasion
+T1562 - Impair Defenses
+*/
+
+data_stream.dataset:"aws.cloudtrail"
+and event.action:("StopLogging" or "StartLogging" or "UpdateTrail")
